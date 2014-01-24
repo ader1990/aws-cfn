@@ -22,9 +22,10 @@ StackResourceDetail  - detailed information about a StackResource
 
 """
 from cfnbootstrap import aws_client, util
-from cfnbootstrap.aws_client import CFNSigner, V4Signer
+from cfnbootstrap.aws_client import CFNSigner, V4Signer, V2Signer
 from cfnbootstrap.util import retry_on_failure
 import datetime
+import dateutil.parser
 import logging
 import re
 from util import Credentials
@@ -64,7 +65,8 @@ class CloudFormationClient(aws_client.Client):
             if not region:
                 raise ValueError('Region is required for AWS V4 Signatures')
 
-        signer = CFNSigner() if self.using_instance_identity else V4Signer(region, 'cloudformation')
+        signer = V2Signer()
+        #CFNSigner() if self.using_instance_identity else V4Signer(region, 'cloudformation')
 
         super(CloudFormationClient, self).__init__(credentials, True, endpoint, signer, proxyinfo=proxyinfo)
 
@@ -72,7 +74,8 @@ class CloudFormationClient(aws_client.Client):
 
     @classmethod
     def endpointForRegion(cls, region):
-        return 'https://cloudformation.%s.amazonaws.com' % region
+        return 'http://10.7.1.113:8000/v1/'
+        # % region
 
     @classmethod
     def regionForEndpoint(cls, endpoint):
@@ -181,7 +184,8 @@ class StackResourceDetail(object):
         detail = util.json_from_response(resp)['DescribeStackResourceResponse']['DescribeStackResourceResult']['StackResourceDetail']
 
         self._description = detail.get('Description')
-        self._lastUpdated = datetime.datetime.utcfromtimestamp(detail['LastUpdatedTimestamp'])
+        self._lastUpdated = dateutil.parser.parse(detail['LastUpdatedTimestamp'])
+        #self._lastUpdated = datetime.datetime.utcfromtimestamp(detail['LastUpdatedTimestamp'])
         self._logicalResourceId = detail['LogicalResourceId']
 
         _rawMetadata = detail.get('Metadata')
