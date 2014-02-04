@@ -56,7 +56,7 @@ class CloudFormationClient(aws_client.Client):
         else:
             endpoint = url
 
-        self.using_instance_identity = (not credentials or not credentials.access_key) and util.is_ec2()
+        self.using_instance_identity = (not credentials or not credentials.access_key)# and util.is_ec2()
 
         if not self.using_instance_identity:
             if not region:
