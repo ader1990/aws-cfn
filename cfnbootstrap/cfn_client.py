@@ -189,7 +189,10 @@ class StackResourceDetail(object):
         self._logicalResourceId = detail['LogicalResourceId']
 
         _rawMetadata = detail.get('Metadata')
-        self._metadata = json.loads(_rawMetadata) if _rawMetadata else None
+        if _rawMetadata:
+            self._metadata = _rawMetadata
+        else:
+            self._metadata = None
 
         self._physicalResourceId = detail.get('PhysicalResourceId')
         self._resourceType = detail['ResourceType']
