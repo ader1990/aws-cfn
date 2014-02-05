@@ -74,8 +74,7 @@ class CloudFormationClient(aws_client.Client):
 
     @classmethod
     def endpointForRegion(cls, region):
-        return 'http://10.7.1.113:8000/v1/'
-        # % region
+        return 'https://cloudformation.%s.amazonaws.com' % region
 
     @classmethod
     def regionForEndpoint(cls, endpoint):
